@@ -374,7 +374,7 @@
       const stored = localStorage.getItem('wattmon_user');
       if (stored) {
         // from /public/login.html → one level up to /index.html
-        window.location.href = '../index.html';
+        window.location.href = '/Wattmon/';
       }
     }
     checkSession();
@@ -426,7 +426,7 @@
         // Redirect after 1 second
         setTimeout(() => {
           // from /public/login.html → one level up to /index.html
-          window.location.href = '../index.html';
+          window.location.href = '/Wattmon/';
         }, 1000);
 
       } catch (err) {
