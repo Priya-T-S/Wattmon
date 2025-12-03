@@ -1,9 +1,7 @@
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  base: "./", // ⭐ use relative paths so /login.html works correctly in build
-  server: {
-    // ⭐ when you run `npm run dev`, open login.html first instead of index.html
-    open: "/login.html",
-  },
+  base: "/Wattmon/",
+  plugins: [react()],
 });

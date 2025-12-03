@@ -373,9 +373,8 @@
     function checkSession() {
       const stored = localStorage.getItem('wattmon_user');
       if (stored) {
-        const isGitHubPages = window.location.hostname.endsWith('github.io');
-        const dashboardPath = isGitHubPages ? '/Wattmon/' : '/index.html';
-        window.location.href = dashboardPath;
+        // from /public/login.html → one level up to /index.html
+        window.location.href = '/Wattmon/';
       }
     }
     checkSession();
@@ -426,9 +425,8 @@
 
         // Redirect after 1 second
         setTimeout(() => {
-          const isGitHubPages = window.location.hostname.endsWith('github.io');
-          const dashboardPath = isGitHubPages ? '/Wattmon/' : '/index.html';
-          window.location.href = dashboardPath;
+          // from /public/login.html → one level up to /index.html
+          window.location.href = '/Wattmon/';
         }, 1000);
 
       } catch (err) {

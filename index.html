@@ -11,7 +11,7 @@
       // use /public/login.html so it works on GitHub Pages + Vite dev
       if (!user) {
         window.__BLOCK_REACT__ = true;         // stop React from loading
-        location.replace("public/login.html"); // fastest redirect
+        location.replace("/Wattmon/login.html"); // fastest redirect
       }
     </script>
 
@@ -41,7 +41,7 @@
     >
       <button
         type="button"
-        onclick="window.location.href = 'public/profile.html'"
+        onclick="window.location.href = '/Wattmon/profile.html'"
         style="
           padding: 6px 10px;
           border-radius: 999px;
@@ -56,7 +56,7 @@
       </button>
       <button
         type="button"
-        onclick="(function(){ localStorage.removeItem('wattmon_user'); window.location.href = 'public/login.html'; })()"
+        onclick="(function(){ localStorage.removeItem('wattmon_user'); window.location.href = '/Wattmon/login.html'; })()"
         style="
           padding: 6px 10px;
           border-radius: 999px;
