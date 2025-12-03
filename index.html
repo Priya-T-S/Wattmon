@@ -8,18 +8,20 @@
       const user = localStorage.getItem("wattmon_user");
 
       // if no logged-in user → block React + redirect instantly
+      // use relative path so it works on GitHub Pages (/Wattmon/login.html)
       if (!user) {
         window.__BLOCK_REACT__ = true;         // stop React from loading
-        location.replace("/login.html");        // fastest redirect
+        location.replace("login.html");        // fastest redirect
       }
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- relative paths so assets work under /Wattmon/ on GitHub Pages -->
+    <link rel="icon" type="image/svg+xml" href="vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wattmon</title>
 
     <!-- CSS can load (doesn't break anything) -->
-    <link rel="stylesheet" crossorigin href="/assets/index-B_OoetH0.css">
+    <link rel="stylesheet" crossorigin href="assets/index-B_OoetH0.css">
   </head>
 
   <body>
@@ -77,7 +79,7 @@
       if (!window.__BLOCK_REACT__) {
         const script = document.createElement("script");
         script.type = "module";
-        script.src = "/assets/index-C63ecpOA.js";
+        script.src = "assets/index-C63ecpOA.js";
         document.body.appendChild(script);
       }
     </script>
