@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wattmon – Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes voltPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.03); }
+    }
+    .volt-avatar {
+      animation: voltPulse 2.4s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+  <div class="max-w-5xl mx-auto px-4 py-6 md:py-10">
+    <!-- Top bar -->
+    <div class="flex items-center justify-between mb-6">
+      <button
+        onclick="window.location.href='index.html'"
+        class="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-emerald-400 transition-colors"
+      >
+        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-800">←</span>
+        Back to dashboard
+      </button>
+      <button
+        id="logoutBtn"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 hover:bg-red-600 text-sm font-medium shadow-md"
+      >
+        Logout
+      </button>
+    </div>
+
+    <!-- Main grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left column: avatar + core stats -->
+      <div class="lg:col-span-1 space-y-4">
+        <!-- Avatar card -->
+        <div class="relative overflow-hidden rounded-3xl bg-slate-900/80 border border-slate-700 p-5">
+          <div class="absolute -right-10 -top-10 w-36 h-36 bg-emerald-500/20 rounded-full blur-3xl"></div>
+          <div class="relative flex flex-col items-center text-center gap-3">
+            <div
+              id="avatarCircle"
+              class="volt-avatar w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-4xl shadow-xl"
+            >
+              ⚡
+            </div>
+
+            <div>
+              <h1 id="profileName" class="text-2xl font-semibold">Player</h1>
+              <p id="profileEmail" class="text-sm text-slate-400 mt-1 break-all">user@example.com</p>
+            </div>
+
+            <span
+              id="avatarStage"
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-300"
+            >
+              Stage: baby
+            </span>
+          </div>
+        </div>
+
+        <!-- Points & level -->
+        <div class="rounded-3xl bg-slate-900/80 border border-slate-700 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">WattPoints</span>
+            <span id="wattpoints" class="text-2xl font-semibold text-emerald-400">0</span>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+              <span>Level <span id="avatarLevel">1</span></span>
+              <span><span id="xpCurrent">0</span> XP</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+              <div id="xpBar" class="h-full rounded-full bg-emerald-400" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-3 text-xs">
+            <div>
+              <p class="text-slate-400 mb-1">Hunger</p>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div id="hungerBar" class="h-full rounded-full bg-amber-400" style="width: 100%;"></div>
+              </div>
+              <p id="hungerLabel" class="mt-1 text-slate-400">100%</p>
+            </div>
+            <div>
+              <p class="text-slate-400 mb-1">Happiness</p>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div id="happinessBar" class="h-full rounded-full bg-pink-400" style="width: 100%;"></div>
+              </div>
+              <p id="happinessLabel" class="mt-1 text-slate-400">100%</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location / rank -->
+        <div class="rounded-3xl bg-slate-900/80 border border-slate-700 p-5 space-y-2 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Global rank</span>
+            <span id="rankLabel" class="text-emerald-300 font-medium">Rising star</span>
+          </div>
+          <p id="locationLabel" class="text-xs text-slate-500">
+            Location unknown
+          </p>
+        </div>
+      </div>
+
+      <!-- Right column: usage, devices, badges -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Daily energy usage chart -->
+        <div class="rounded-3xl bg-slate-900/80 border border-slate-700 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-slate-200">Daily energy usage</h2>
+            <span class="text-xs text-slate-400">Last 7 days</span>
+          </div>
+
+          <div
+            id="usageChart"
+            class="mt-4 grid grid-cols-7 gap-2 items-end h-40 text-xs text-slate-400"
+          >
+            <!-- JS will populate bars -->
+          </div>
+        </div>
+
+        <!-- Devices + badges -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Devices on -->
+          <div class="rounded-3xl bg-slate-900/80 border border-slate-700 p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-slate-200">Devices currently on</h2>
+              <span id="deviceCount" class="text-xs text-slate-400">0 devices</span>
+            </div>
+
+            <ul id="deviceList" class="space-y-2 text-sm text-slate-300">
+              <!-- JS fills -->
+            </ul>
+          </div>
+
+          <!-- Badges -->
+          <div class="rounded-3xl bg-slate-900/80 border border-slate-700 p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-slate-200">Badges</h2>
+              <span id="badgeCount" class="text-xs text-slate-400">0 earned</span>
+            </div>
+
+            <div
+              id="badgeGrid"
+              class="grid grid-cols-2 gap-3 text-xs text-slate-200"
+            >
+              <!-- JS fills -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const raw = localStorage.getItem('wattmon_user');
+    if (!raw) {
+      window.location.href = 'login.html';
+    } else {
+      try {
+        const user = typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+        const name = user.name || 'Wattmon Explorer';
+        const email = user.email || 'Not set';
+
+        // Map DB fields (with fallbacks for older names)
+        const wattpoints = user.wattpoints ?? user.points ?? 0;
+        const level = user.avatar_level ?? user.pet_level ?? 1;
+        const xp = user.xp ?? 0;
+        const hunger = user.avatar_hunger ?? user.pet_hunger ?? 100;
+        const happiness = user.avatar_happiness ?? user.pet_happiness ?? 100;
+        const stage = user.avatar_stage || 'baby';
+
+        const badges = Array.isArray(user.badges) ? user.badges : [];
+        const dailyUsage = user.daily_usage && typeof user.daily_usage === 'object'
+          ? user.daily_usage
+          : {};
+        const devices = Array.isArray(user.devices_on) ? user.devices_on : [];
+
+        const initial = name.trim().charAt(0).toUpperCase() || '⚡';
+
+        // Basic info
+        document.getElementById('avatarCircle').textContent = initial;
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profileEmail').textContent = email;
+        document.getElementById('avatarStage').textContent = 'Stage: ' + stage;
+
+        // Core stats
+        document.getElementById('wattpoints').textContent = wattpoints;
+        document.getElementById('avatarLevel').textContent = level;
+        document.getElementById('xpCurrent').textContent = xp;
+
+        const xpForNext = 100;
+        const xpPercent = Math.max(0, Math.min(100, (xp % xpForNext) / xpForNext * 100));
+        document.getElementById('xpBar').style.width = xpPercent + '%';
+
+        const clampedHunger = Math.max(0, Math.min(100, hunger));
+        const clampedHappiness = Math.max(0, Math.min(100, happiness));
+        document.getElementById('hungerBar').style.width = clampedHunger + '%';
+        document.getElementById('happinessBar').style.width = clampedHappiness + '%';
+        document.getElementById('hungerLabel').textContent = clampedHunger + '%';
+        document.getElementById('happinessLabel').textContent = clampedHappiness + '%';
+
+        // Location + rank (simple placeholder logic)
+        const rankLabel = document.getElementById('rankLabel');
+        if (wattpoints > 5000) {
+          rankLabel.textContent = 'Top 10%';
+        } else if (wattpoints > 2000) {
+          rankLabel.textContent = 'Top 25%';
+        } else if (wattpoints > 500) {
+          rankLabel.textContent = 'Top 50%';
+        } else {
+          rankLabel.textContent = 'Rising star';
+        }
+
+        const lat = user.latitude;
+        const lon = user.longitude;
+        const locationLabel = document.getElementById('locationLabel');
+        if (lat != null && lon != null) {
+          locationLabel.textContent = 'Lat: ' + lat.toFixed(3) + ', Lon: ' + lon.toFixed(3);
+        } else {
+          locationLabel.textContent = 'Location not set';
+        }
+
+        // Devices
+        const deviceList = document.getElementById('deviceList');
+        const deviceCount = document.getElementById('deviceCount');
+        deviceCount.textContent = devices.length + ' device' + (devices.length === 1 ? '' : 's');
+        deviceList.innerHTML = '';
+        if (!devices.length) {
+          deviceList.innerHTML = '<li class="text-xs text-slate-500">All clear – no tracked devices on.</li>';
+        } else {
+          devices.forEach((dev) => {
+            const li = document.createElement('li');
+            const started = dev.started_at ? new Date(dev.started_at).toLocaleTimeString() : 'Unknown time';
+            li.className = 'flex items-center justify-between rounded-2xl bg-slate-800/80 px-3 py-2';
+            li.innerHTML = `
+              <div>
+                <p class="font-medium">${dev.name || 'Device'}</p>
+                <p class="text-xs text-slate-400">${dev.room || 'Unknown room'} • since ${started}</p>
+              </div>
+              <span class="text-xs text-emerald-300">ON</span>
+            `;
+            deviceList.appendChild(li);
+          });
+        }
+
+        // Badges
+        const badgeGrid = document.getElementById('badgeGrid');
+        const badgeCount = document.getElementById('badgeCount');
+        badgeCount.textContent = badges.length + ' badge' + (badges.length === 1 ? '' : 's');
+        badgeGrid.innerHTML = '';
+        if (!badges.length) {
+          badgeGrid.innerHTML = '<p class="text-xs text-slate-500">No badges yet – start saving energy to unlock rewards.</p>';
+        } else {
+          badges.forEach((b) => {
+            const div = document.createElement('div');
+            div.className = 'rounded-2xl bg-slate-800/80 border border-slate-700 px-3 py-3 flex items-start gap-2';
+            div.innerHTML = `
+              <div class="text-lg">${b.icon || '🏅'}</div>
+              <div>
+                <p class="font-medium text-xs">${b.label || b.id}</p>
+                <p class="text-[11px] text-slate-400">${b.description || ''}</p>
+              </div>
+            `;
+            badgeGrid.appendChild(div);
+          });
+        }
+
+        // Daily usage (simple 7-day bar chart)
+        const usageChart = document.getElementById('usageChart');
+        const entries = Object.entries(dailyUsage)
+          .sort(([a], [b]) => new Date(a) - new Date(b))
+          .slice(-7);
+        usageChart.innerHTML = '';
+        if (!entries.length) {
+          usageChart.innerHTML = '<p class="col-span-7 text-xs text-slate-500">No usage data yet.</p>';
+        } else {
+          const maxVal = Math.max(...entries.map(([, v]) => Number(v) || 0), 1);
+          entries.forEach(([dateStr, value]) => {
+            const val = Number(value) || 0;
+            const percent = (val / maxVal) * 100;
+            const col = document.createElement('div');
+            col.className = 'flex flex-col items-center gap-1';
+            col.innerHTML = `
+              <div class="w-full h-full flex items-end">
+                <div class="w-full rounded-full bg-emerald-400/80" style="height:${percent}%;"></div>
+              </div>
+              <span class="text-[10px] text-slate-400">${new Date(dateStr).getDate()}</span>
+            `;
+            usageChart.appendChild(col);
+          });
+        }
+
+        // Logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.onclick = () => {
+            localStorage.removeItem('wattmon_user');
+            window.location.href = 'login.html';
+          };
+        }
+      } catch (e) {
+        console.error('Failed to parse wattmon_user', e);
+        localStorage.removeItem('wattmon_user');
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+
+</body>
+</html>
