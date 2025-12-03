@@ -2,13 +2,84 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/Wattmon/vite.svg" />
+
+    <!-- ⭐ HARD REDIRECT BEFORE ANYTHING LOADS ⭐ -->
+    <script>
+      const user = localStorage.getItem("wattmon_user");
+
+      // if no logged-in user → block React + redirect instantly
+      if (!user) {
+        window.__BLOCK_REACT__ = true;         // stop React from loading
+        location.replace("/login.html");        // fastest redirect
+      }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>wattmon-app</title>
-    <script type="module" crossorigin src="/Wattmon/assets/index-C63ecpOA.js"></script>
-    <link rel="stylesheet" crossorigin href="/Wattmon/assets/index-B_OoetH0.css">
+    <title>Wattmon</title>
+
+    <!-- CSS can load (doesn't break anything) -->
+    <link rel="stylesheet" crossorigin href="/assets/index-B_OoetH0.css">
   </head>
+
   <body>
+    <!-- Simple top-right profile / logout bar, shown only when user is logged in -->
+    <div
+      id="wattmon-nav"
+      style="
+        position: fixed;
+        top: 12px;
+        right: 16px;
+        display: flex;
+        gap: 8px;
+        z-index: 50;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+      "
+    >
+      <button
+        type="button"
+        onclick="window.location.href = 'profile.html'"
+        style="
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: none;
+          background: #2563eb;
+          color: white;
+          font-size: 13px;
+          cursor: pointer;
+        "
+      >
+        Profile
+      </button>
+      <button
+        type="button"
+        onclick="(function(){ localStorage.removeItem('wattmon_user'); window.location.href = 'login.html'; })()"
+        style="
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: none;
+          background: #ef4444;
+          color: white;
+          font-size: 13px;
+          cursor: pointer;
+        "
+      >
+        Logout
+      </button>
+    </div>
+
+    <!-- React root -->
     <div id="root"></div>
+
+    <!-- ⭐ ONLY LOAD REACT IF USER EXISTS ⭐ -->
+    <script>
+      if (!window.__BLOCK_REACT__) {
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = "/assets/index-C63ecpOA.js";
+        document.body.appendChild(script);
+      }
+    </script>
   </body>
 </html>
