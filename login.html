@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wattmon – Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%2310B981' d='M7 1l-5 8h4l-1 6 6-9H9l2-5z'/%3E%3C/svg%3E" />
+  
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.6); }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      75% { transform: translateX(-10px); }
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    .slide-in {
+      animation: slideIn 0.6s ease-out forwards;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    input:focus {
+      transform: scale(1.02);
+      transition: all 0.3s ease;
+    }
+    
+    .energy-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: particle-float 4s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    
+    @keyframes particle-float {
+      0%, 100% { transform: translate(0, 0); opacity: 0; }
+      50% { opacity: 0.8; }
+    }
+    
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+      margin: auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+  <!-- Floating Energy Particles -->
+  <div class="absolute inset-0 pointer-events-none" id="particleContainer"></div>
+
+  <!-- Main Login Card -->
+  <div class="glass-effect p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md slide-in relative z-10">
+    
+    <!-- Logo & Title -->
+    <div class="text-center mb-8">
+      <div class="inline-block mb-4">
+        <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center float-animation pulse-glow">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+      </div>
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+        Welcome to Wattmon
+      </h1>
+      <p class="text-gray-600">Save Energy, Grow Your Monster</p>
+    </div>
+
+    <!-- Error Box -->
+    <div id="errorBox" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 slide-in">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+        <span id="errorMessage"></span>
+      </div>
+    </div>
+
+    <!-- Success Box -->
+    <div id="successBox" class="hidden bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 rounded-lg mb-6 slide-in">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <span id="successMessage"></span>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="space-y-6">
+      
+      <!-- Email Input -->
+      <div class="relative">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+            </svg>
+          </span>
+          <input 
+            id="email" 
+            type="email" 
+            placeholder="your@email.com"
+            class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all"
+            required
+            autofocus>
+        </div>
+      </div>
+
+      <!-- Password Input -->
+      <div class="relative">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </span>
+          <input 
+            id="password" 
+            type="password"
+            placeholder="••••••••"
+            class="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all"
+            required>
+          <button 
+            type="button"
+            id="togglePassword"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+            <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="flex items-center justify-between text-sm">
+        <label class="flex items-center cursor-pointer">
+          <input type="checkbox" id="rememberMe" class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+          <span class="ml-2 text-gray-600">Remember me</span>
+        </label>
+        <a
+          href="#"
+          id="forgotPasswordLink"
+          class="text-emerald-600 hover:text-emerald-700 font-semibold"
+        >
+          Forgot password?
+        </a>
+      </div>
+
+      <!-- Login Button -->
+      <button 
+        id="loginBtn"
+        type="submit"
+        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3.5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transform transition-all duration-300 hover:from-emerald-600 hover:to-teal-600">
+        <span id="btnText">Login to Wattmon</span>
+      </button>
+
+    </form>
+
+    <!-- Signup CTA -->
+    <div class="mt-8 text-center">
+      <p class="text-gray-600 mb-3">
+        Don't have an account?
+      </p>
+      <button
+        type="button"
+        onclick="window.location.href = 'signup.html'"
+        class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white border-2 border-emerald-500 text-emerald-600 font-semibold shadow-sm hover:bg-emerald-50 hover:shadow-md transition-all hover:scale-105"
+      >
+        Sign up for Wattmon
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Floating Stats Cards -->
+  <div class="hidden md:block absolute top-10 left-10 glass-effect p-4 rounded-2xl shadow-lg slide-in" style="animation-delay: 0.2s;">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+        <span class="text-2xl">⚡</span>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Energy Saved</p>
+        <p class="text-xl font-bold text-gray-800">2,450 kWh</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden md:block absolute bottom-10 right-10 glass-effect p-4 rounded-2xl shadow-lg slide-in" style="animation-delay: 0.4s;">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+        <span class="text-2xl">👥</span>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Active Users</p>
+        <p class="text-xl font-bold text-gray-800">12,483</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase SDK -->
+  
+
+  <!-- Import Supabase Config -->
+ <script type="module">
+  import { supabase } from './supabaseConfig.js';
+  window.supabase = supabase;
+</script>
+
+
+  <!-- JavaScript -->
+  <script>
+    // Get supabase client from global
+    const getSupabase = () => window.supabase;
+
+
+    // Create floating particles
+    function createParticles() {
+      const container = document.getElementById('particleContainer');
+      for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'energy-particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 4 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        container.appendChild(particle);
+      }
+    }
+    createParticles();
+
+    // UI Elements
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = document.getElementById('btnText');
+    const togglePassword = document.getElementById('togglePassword');
+    const errorBox = document.getElementById('errorBox');
+    const errorMessage = document.getElementById('errorMessage');
+    const successBox = document.getElementById('successBox');
+    const successMessage = document.getElementById('successMessage');
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+    // Password toggle
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+    });
+
+    // Show error message
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorBox.classList.remove('hidden');
+      successBox.classList.add('hidden');
+      
+      // Vibration if supported
+      if (navigator.vibrate) {
+        navigator.vibrate(200);
+      }
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successBox.classList.remove('hidden');
+      errorBox.classList.add('hidden');
+    }
+
+    // Shake input animation
+    function shakeInput(input) {
+      input.classList.add('shake');
+      setTimeout(() => input.classList.remove('shake'), 500);
+    }
+
+    // Forgot password handler - sends reset email
+    if (forgotPasswordLink) {
+      forgotPasswordLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const supabase = getSupabase();
+        if (!supabase) {
+          showError('Supabase connection not ready. Please refresh the page.');
+          return;
+        }
+
+        const email = emailInput.value.trim();
+        if (!email) {
+          showError('Please enter your email above first.');
+          shakeInput(emailInput);
+          emailInput.focus();
+          return;
+        }
+
+        try {
+          const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/login.html',
+          });
+
+          if (error) {
+            showError(error.message || 'Could not send reset email.');
+            return;
+          }
+
+          showSuccess('Password reset email sent! Check your inbox.');
+        } catch (err) {
+          showError('Something went wrong while sending reset email.');
+        }
+      });
+    }
+
+    // Check if already "logged in" via localStorage
+    function checkSession() {
+      const stored = localStorage.getItem('wattmon_user');
+      const __BASE__ = (location.host.includes('github.io')) ? '/Wattmon' : '';
+      if (stored) {
+        window.location.href = `${__BASE__}/index.html`;
+      }
+    }
+    checkSession();
+
+    // Demo login handler (replace with your actual authentication)
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const supabase = getSupabase();
+      if (!supabase) {
+        showError('Supabase connection not ready. Please refresh the page.');
+        return;
+      }
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      // Hide messages
+      errorBox.classList.add('hidden');
+      successBox.classList.add('hidden');
+
+      // Show loading state
+      btnText.innerHTML = '<div class="loading-spinner"></div>';
+      loginBtn.disabled = true;
+
+      try {
+        // Check credentials directly against wattmon_users table
+        const { data: userData, error } = await supabase
+          .from('wattmon_users')
+          .select('*')
+          .eq('email', email)
+          .eq('password', password)
+          .single();
+
+        if (error || !userData) {
+          showError('Invalid email or password');
+          shakeInput(passwordInput);
+          passwordInput.select();
+          btnText.textContent = 'Login to Wattmon';
+          loginBtn.disabled = false;
+          return;
+        }
+
+        // Store user data locally for the app
+        localStorage.setItem('wattmon_user', JSON.stringify(userData));
+
+        showSuccess('Login successful! Redirecting...');
+
+        // Redirect after 1 second
+        setTimeout(() => {
+          const __BASE__ = (location.host.includes('github.io')) ? '/Wattmon' : '';
+          window.location.href = `${__BASE__}/index.html`;
+        }, 1000);
+
+      } catch (err) {
+        showError('An unexpected error occurred. Please try again.');
+        btnText.textContent = 'Login to Wattmon';
+        loginBtn.disabled = false;
+      }
+    });
+
+    // Auto-fill demo credentials on page load (for testing)
+    // Remove this in production
+    window.addEventListener('load', () => {
+      // emailInput.value = 'demo@wattmon.com';
+      // passwordInput.value = 'demo123';
+    });
+  </script>
+
+</body>
+</html>

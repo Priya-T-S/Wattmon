@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wattmon – Sign Up</title>
+  <style>
+  .btn-primary {
+    width: 100%;
+    background: #2563eb; /* Blue-600 */
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: #1d4ed8; /* Blue-700 */
+  }
+</style>
+
+  <link rel="stylesheet" href="assets/index-B_OoetH0.css">
+
+ 
+</head>
+
+<body class="bg-gradient-to-br from-blue-500 to-green-400 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <h1 class="text-3xl font-bold text-blue-600 text-center mb-6">
+      Create Your Wattmon Account ⚡
+    </h1>
+
+    <form id="signupForm" class="space-y-4">
+
+      <div>
+        <label class="font-medium">Name</label>
+        <input id="name" type="text" class="w-full border p-2 rounded" required>
+      </div>
+
+      <div>
+        <label class="font-medium">Email</label>
+        <input id="email" type="email" class="w-full border p-2 rounded" required>
+      </div>
+
+      <div>
+        <label class="font-medium">Password</label>
+        <input id="password" type="password" class="w-full border p-2 rounded" required>
+      </div>
+
+      <button class="btn-primary" type="submit">
+        Continue
+      </button>
+
+    </form>
+
+    <p class="mt-4 text-center text-sm">
+      Already have an account?
+      <a href="login.html" class="text-blue-700 font-semibold">Login</a>
+    </p>
+  </div>
+
+
+<script type="module">
+import { supabase } from "./supabaseConfig.js";
+
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  try {
+    // 1) Create Supabase auth user so email/password works for login
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (authError) {
+      // If user already exists in auth, send them to login instead
+      if (
+        authError.message &&
+        authError.message.toLowerCase().includes("already registered")
+      ) {
+        alert("An account with this email already exists. Please log in instead.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      alert("Signup failed: " + authError.message);
+      return;
+    }
+
+    // 2) Upsert profile row in wattmon_users (no need to store password here)
+    const { error: profileError } = await supabase
+      .from("wattmon_users")
+      .upsert({ name, email, password }, { onConflict: "email" });
+
+    if (profileError) {
+      console.error("Profile upsert error:", profileError);
+      // Don't block the user from logging in just because profile insert failed
+    }
+
+    // 3) Go to login so they can sign in
+    window.location.href = "login.html";
+  } catch (err) {
+    alert("Signup failed: Something went wrong. Please try again.");
+  }
+});
+</script>
+
+</body>
+</html>
